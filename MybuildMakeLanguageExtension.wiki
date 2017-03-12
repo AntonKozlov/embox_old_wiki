@@ -1,0 +1,43 @@
+
+Поскольку синтаксис языка Make достаточно бедный, в Mybuild используются средства для его расширения, добавляющие такие возможности, как:
+
+ * Использование многострочных функций, индентации и комментариев внутри тела функций
+ * Определение анонимных функций внутри другой функции
+ * ...
+ 
+ <table cellspacing="10" width="839"><tr valign="top"><td width="50%">
+ == Без расширений == 
+{{{
+foo = \
+	$(foreach bar,x y z, \
+		$(call baz,$(bar)))
+}}}
+</td><td>
+== С расширениями ==
+{{{
+define foo
+	$(for bar <- x y z,
+		# Some comments...
+		$(call baz,$(bar)))
+endef
+}}}
+</td></tr></table>
+ 
+== объектно ориентированная надстройка ==
+Позволяет определять классы, их свойства и методы, а также создавать объекты и обращаться к ним.
+
+{{{
+define class-Foo
+	$(field message,$1)
+	$(method sayHello,
+		$(info $(get-field message)))
+endef
+}}}
+{{{
+define some_func
+	$(for foo <- $(new Foo,Privet!),
+		$(invoke foo->sayHello)
+		# Return the instance.
+		$(foo))
+endef
+}}}

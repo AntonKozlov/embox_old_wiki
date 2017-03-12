@@ -1,0 +1,15 @@
+#summary Toolchain installation overview.
+
+This section describes how to setup necessary tools which you will need to develop Embox. This section is in no way trying to impose on you the proposed tools, you are free to enjoy a more comfortable and familiar (e.g. *Emacs* or *Vim*).
+
+= [InstallToolchainWindowsCygwin Windows-specific setup] =
+ Windows users have to perform some additional steps to get things work. This article covers the installation procedure of *Cygwin* Unix-compatibility layer.
+
+= [InstallToolchainPath PATH environment variable] =
+ Describes how to set *`PATH`* environment variable in both Windows and Linux systems.
+
+= [InstallToolchainEclipse Eclipse] =
+ Installing and tweaking *Eclipse IDE* with *CDT* plugin. This also includes a guide through installation of *[InstallToolchainSubversion Subclipse]* and *[InstallMybuildEclipsePlugin Mybuild]* plugins for Eclipse.
+
+= [InstallToolchainCrossCompiler Cross-compilers] =
+ This page covers building GCC cross-compiler from scratch.

@@ -1,0 +1,8 @@
+#summary Description of initfs file system
+
+<wiki:toc max_depth="2" />
+
+= Introduction =
+
+Filesystem devfs abstracts the hardware and communicate with any device using a
+[FileInterfaceDescription file interface].

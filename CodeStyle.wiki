@@ -1,0 +1,268 @@
+#summary Main rules of Embox codestyle are described here.
+
+<wiki:toc max_depth="3" />
+
+= Introduction =
+
+Now this document is not complete, if you have some unclear part you should
+contact us, may be in our google group. We explain the details and refine this
+document.
+
+Moreover you can meet some parts which don't correspond this codestyle you may
+correct it yourself or inform us.
+
+== Embox codestyle ==
+
+As a basis for coding style adopted in the Embox project, take the style
+Kernighan and Ritchie (K & R). The following are the basic rules of structure
+and design code.
+
+=== Text placement ===
+
+The length of the rows should not exceed 80 characters.
+
+The size of the function must be of the order of one screen (learn to write in
+a good manner).
+
+=== Tabs and Brackets ===
+
+An example of a well-written functions:
+{{{
+int foo(void) {
+    while (NULL != p) {
+        for (i = 0; i < p->tabsize; i++) {
+            if (p->tab[i] == x) {
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+}}}
+
+{{{
+int bar(void) {
+    __asm__ __volatile__ (
+        "lwi  %0, %1, 0;\n\t"
+        "mfs     %0, rmsr;\n\t"
+        "or   %0, r0, %2;\n\t"
+        "mts   rmsr, %1, 0;\n\t" :
+        "=r"(msr), "=&r"(tmp):
+        "r"(status), "i"(MSR_VM_MASK) :
+        "memory"
+    );
+}
+}}}
+*Comments to the example*:
+ * As the indentation is used tabs, the editor should specify the length of tabs in 4.
+ * Tiny notation (for example, a single if) is not used. Always put curly braces.
+ * The opening brace is placed on the same line, where the operand to which it belongs (after 1 space).
+ * Closing brace is put on a new line at the same level (the indentation), as 'parent' code.
+
+=== Blanks and blank lines ===
+
+*Blank lines*:
+ * No more than one blank line in a row
+ * At the end of the file one blank line
+ * Between the declarations or definitions of the functions and variables one blank line
+ * Definition of local variables of the function is separated from code by one blank line
+
+Spaces are arranged as standard.
+
+*One space is placed*:
+ * between operators:
+{{{
+int a = x + y * (1 + b) / foo(11);
+}}}
+ * between control constructs (for/while/if/switch) and brackets:
+{{{
+if (a < 7) {
+  ...
+}
+}}}
+ * When casting the type:
+{{{
+int x = (int) ((double) a / 13 + 13);
+}}}
+*No space is placed*:
+ * Function definition:
+{{{
+int main(void) {
+}
+}}}
+ * Function call:
+{{{
+int x = foo(1);
+}}}
+ * Before and after increment and decrement operator:
+{{{
+i++;
+}}}
+ * At a pointer between a name and {{{*}}}:
+{{{
+struct list_head *tmp;
+}}}
+
+=== Macroses ===
+
+ * Every defined constant name should contain only upper case symbols.
+ * Macros are also written in large letters with the underscore.
+ * Allow (not require) use lower case symbols (as in usual function name), if it isn't differ from usual functions during its calling, that meens it have no side effect at all (there is no *return* in it and etc.)
+ * If macrose is multiline you should use '\' and place it at the end of each line (except last) separating it space symbols
+ * Each macrose's arguments must be in brackets, except string concatenation *##*
+ * Macros consisted of several expressions must be in *do { ... } while(0)*
+
+Examples of good macros:
+{{{
+#define INTERRUPT_NRS_TOTAL 16
+}}}
+{{{
+#define interrupt_nr_valid(interrupt_nr) \
+	((interrupt_nr_t) interrupt_nr < (interrupt_nr_t) INTERRUPT_NRS_TOTAL)
+}}}
+{{{
+#define INTERRUPT_NR_CHECK(interrupt_nr)     \
+  do {                                       \
+    if (!interrupt_nr_valid(interrupt_nr)) { \
+      printf("Invalid interrupt number");    \
+      return -EINVAL;                        \
+    }                                        \
+  } while (0)
+}}}
+
+=== Naming conventions ===
+
+All exported (externally accessible) functions and variables must be prefixed,
+specific for the current module.
+
+All except the macro is written in small letters, through emphasis.
+
+=== Conventional comments ===
+
+ * The code must contain only English language. This applies not only to comment, but the naming of functions and variables.
+ * Allowed only comments in the C-style:
+{{{
+/* ... */
+}}}
+ * Comments *//...* not allowed
+ * Large blocks of code should be disabled by using the conditional compilation preprocessor:
+{{{
+#if 0
+  ... unused_code ...
+#endif
+}}}
+ * Multiline comments starting an asterisk. Each sentence finish a point. Sections are separeted blank line:
+{{{
+/* This code is necessary.
+ *
+ * Attension! It uses architecture-dependent code for SPARC.
+ */
+... Some code
+}}}
+ * Every file have to start with a header. The header must format as [http://www.stack.nl/~dimitri/doxygen/manual.html Doxygen] comments. The header shoul conteins a following information:
+     * Autors
+     * Date of creation
+     * Short and detail description of the module
+     * Changes list
+ * The doxygen comments must be placed under each public funtion
+    How to start each file:
+{{{
+/**
+ * @file
+ * @brief Short brief: starts with capital letter, point on the end.
+ * @details Complete description. Possible to be written not on one line
+ * Each line must be less then 80 symbols length. Each phrase ends with point.
+ * Different paragraphs should be separated with empty line.
+ * <empty line after description>
+ * @date <creation date: dd.mm.yy>
+ * @author <Name Surname of the first author>
+ * @author <Name Surname>
+ *         - <Changes description>
+ *         - Doxygen understands any visual enhancement commands in this
+ *           section, e.g. you may use hyphens to create a list of items.
+ */
+}}}
+   An example of such comments:
+{{{
+/**
+ * @file
+ * @brief IO Boards driver.
+ * @details This driver defines generic operations with registers
+ * of IO board's address space: @link #io_board_reg_load() load @endlink
+ * and @link #io_board_reg_store() store @endlink.
+ *
+ * <b>Driver details</b>:
+ * <table>
+ * <tr><td>Bus</td>         <td>@c APB</td></tr>
+ * <tr><td>Vendor ID</td>   <td>@c 0x08 (Terkom)</td></tr>
+ * <tr><td>Device ID</td>   <td>@c 0x0A</td></tr>
+ * <tr><td>Base</td>        <td>@c 0x80000B00</td></tr>
+ * <tr><td>IRQ</td>         <td>@c --</td></tr>
+ * </table>
+ *
+ * @date 18.12.08
+ * @author Anton Bondarev
+ *         - Initial implementation
+ * @author Eldar Abusalimov
+ *         - Reviewing, refactoring and documenting
+ */
+}}}
+
+ * Each macros, type definition, function prototype, enumeration, union, structure, and its fields, must be particularly described in comments.
+
+{{{
+/**
+ * Checks if the specified irq_nr represents valid IRQ number.
+ * @note The same as HAL @link interrupt_nr_valid() @endlink macro.
+ */
+#define irq_nr_valid(irq_nr) interrupt_nr_valid(irq_nr)
+
+/**
+ * Type representing interrupt request number.
+ * @note The same as HAL #interrupt_nr_t type.
+ */
+typedef interrupt_nr_t irq_nr_t;
+
+/**
+ * Interrupt Service Routine type.
+ *
+ * @param irq_nr the number of interrupt request being handled
+ * @param data the device tag specified at @link irq_attach() @endlink time
+ *
+ * @return interrupt handling result
+ * @retval IRQ_NONE if ISR didn't handled the interrupt
+ * @retval IRQ_HANDLED if interrupt has been handled by this ISR
+ */
+typedef irq_return_t (*irq_handler_t)(irq_nr_t irq_nr, void *data);
+
+/**
+ * Attaches @link #irq_handler_t interrupt service routine @endlink to the
+ * specified @link #irq_nr_t IRQ number @endlink.
+ *
+ * @param irq_nr the IRQ number to attach the @c handler to
+ * @param handler the ISR itself
+ * @param flags TODO not yet implemented -- Eldar
+ * @param data the optional device tag which will be passed to the ISR.
+ * @param dev_name the optional device name
+ *
+ * @return attach result
+ * @retval 0 if all is OK
+ * @retval -EINVAL if @c irq_nr is not @link #irq_nr_valid() valid @endlink or
+ *                 if the @c handler is @c NULL
+ * @retval -EBUSY if another ISR has already been attached to the specified IRQ
+ *                number
+ * @retval -ENOSYS if kernel is compiled without IRQ support
+ */
+extern int irq_attach(irq_nr_t irq_nr, irq_handler_t handler,
+		irq_flags_t flags, void *data, const char *dev_name);
+}}}
+
+=== Header (‘.h’) files ===
+
+The body of header file must be organized in the following way:
+{{{
+#ifndef <subsystem_prefix>_<file_name>_H_
+#define <subsystem_prefix>_<file_name>_H_
+
+#endif /* <subsystem_prefix>_<file_name>_H_ */
+}}}
